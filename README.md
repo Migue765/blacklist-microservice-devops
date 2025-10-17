@@ -141,14 +141,12 @@ Debe mostrar:
 
 ## 👥 Autores
 
-* *Nombre del estudiante 1*
-* *Nombre del estudiante 2*
-* *Nombre del estudiante 3*
-* *Nombre del estudiante 4*
-
-Universidad de los Andes – Maestría en Ingeniería de Software
-Curso: *DevOps: Agilizando el Despliegue Continuo de Aplicaciones*
-Profesor: *Mario José Villamizar Cano*
+| Integrante | Correo | GitHub |
+|------------|--------|--------|
+| Angie Natalia Arandio Niño | a.arandio@uniandes.edu.co | [@nataliaarandio](https://github.com/nataliaarandio) |
+| Jazmin Natalia Cordoba Puerto | jn.cordobap1@uniandes.edu.co | [@JazminCorAndes](https://github.com/JazminCorAndes) |
+| Juan Esteban Mejia Isaza | je.mejiai1@uniandes.edu.co | [@JUANES545](https://github.com/JUANES545) |
+| Miguel Alejandro Gomez Alarcon | ma.gomeza1@uniandes.edu.co | [@Migue765](https://github.com/Migue765) |
 
 ---
 
