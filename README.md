@@ -45,10 +45,17 @@ blacklist-microservice-devops/
 │   ├── wsgi.py                  # Entry point para EB
 │   └── routes/
 │       ├── __init__.py
-│       ├── blacklists.py        # Endpoints principales
+│       ├── blacklists.py        # Endpoint POST
+│       ├── blacklists_get.py    # Endpoint GET (pendiente)
 │       └── health.py            # Health check
-├── requirements.txt
-├── Procfile                     # Comando para EB
+├── requirements.txt             # Dependencias
+├── run_server.py                # Script de desarrollo
+├── test_api.py                  # Pruebas de API
+├── api_tests.http               # Pruebas HTTP
+├── postman_collection.json      # Colección Postman
+├── env.example                  # Variables de entorno
+├── install_deps.sh              # Script de instalación
+├── pycharm_config.py            # Configuración PyCharm
 ├── runtime.txt                  # Versión Python
 └── .ebextensions/               # Configuración EB
 ```
@@ -118,13 +125,10 @@ export FLASK_ENV="development"
 
 ### 4. Ejecutar aplicación
 ```bash
-# Opción 1: Script de desarrollo (recomendado)
+# Script de desarrollo
 python run_server.py
 
-# Opción 2: Script de inicio rápido
-python start_dev.py
-
-# Opción 3: Gunicorn (producción)
+# Gunicorn (producción)
 gunicorn app.wsgi:app
 ```
 
@@ -132,9 +136,6 @@ gunicorn app.wsgi:app
 ```bash
 # Ejecutar pruebas completas
 python test_api.py
-
-# Ejecutar pruebas simples
-python test_simple.py
 ```
 
 ---
