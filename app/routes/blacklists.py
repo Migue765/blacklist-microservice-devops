@@ -103,7 +103,3 @@ def add_to_blacklist():
         }), 500
 
 # TODO: GET endpoint movido a blacklists_get.py
-# Pendiente implementación por Nata en rama feature/nata-get-endpoint
-# @blacklists_bp.route('/<email>', methods=['GET'])
-# def check_blacklist(email):
-#     # Lógica movida a app/routes/blacklists_get.py

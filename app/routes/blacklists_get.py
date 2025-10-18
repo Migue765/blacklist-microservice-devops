@@ -4,7 +4,7 @@ from app.models import Blacklist
 from app.auth import require_bearer_token
 from app.utils import setup_logging
 
-# Blueprint para el endpoint GET (pendiente por Nata)
+# Blueprint para el endpoint GET Pendiente
 blacklists_get_bp = Blueprint('blacklists_get', __name__)
 logger = setup_logging()
 
@@ -32,7 +32,6 @@ def check_blacklist(email):
             "reason": "blocked reason or null"
         }
 
-    TODO: Implementar por Nata en rama feature/nata-get-endpoint
     - Validación de formato de email
     - Manejo de errores específicos
     - Pruebas unitarias completas
