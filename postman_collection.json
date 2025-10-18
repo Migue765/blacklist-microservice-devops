@@ -1,0 +1,104 @@
+{
+  "info": {
+    "name": "Blacklist Microservice API",
+    "description": "Colección de pruebas para el microservicio de lista negra",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "description": "URL base del microservicio"
+    },
+    {
+      "key": "token",
+      "value": "dev-bearer-token",
+      "description": "Token Bearer para autenticación"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/ping",
+          "host": ["{{base_url}}"],
+          "path": ["ping"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add to Blacklist",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"test@example.com\",\n  \"app_uuid\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"blocked_reason\": \"Spam detected\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/blacklists",
+          "host": ["{{base_url}}"],
+          "path": ["blacklists"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Check Blacklist",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/blacklists/test@example.com",
+          "host": ["{{base_url}}"],
+          "path": ["blacklists", "test@example.com"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Unauthorized Request",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"unauthorized@example.com\",\n  \"app_uuid\": \"123e4567-e89b-12d3-a456-426614174000\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/blacklists",
+          "host": ["{{base_url}}"],
+          "path": ["blacklists"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

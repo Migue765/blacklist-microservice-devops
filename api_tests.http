@@ -1,0 +1,50 @@
+### Variables
+@base_url = http://localhost:5000
+@token = dev-bearer-token
+
+### Health Check
+GET {{base_url}}/ping
+
+### Add to Blacklist
+POST {{base_url}}/blacklists
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "app_uuid": "123e4567-e89b-12d3-a456-426614174000",
+  "blocked_reason": "Test spam detection"
+}
+
+### Check Blacklist
+GET {{base_url}}/blacklists/test@example.com
+Authorization: Bearer {{token}}
+
+### Unauthorized Request (should return 401)
+POST {{base_url}}/blacklists
+Content-Type: application/json
+
+{
+  "email": "unauthorized@example.com",
+  "app_uuid": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+### Invalid Email Format (should return 400)
+POST {{base_url}}/blacklists
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "invalid-email",
+  "app_uuid": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+### Invalid UUID Format (should return 400)
+POST {{base_url}}/blacklists
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "test2@example.com",
+  "app_uuid": "invalid-uuid"
+}
