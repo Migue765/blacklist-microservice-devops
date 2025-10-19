@@ -10,12 +10,7 @@ from app import create_app
 def main():
     """Función principal para ejecutar el servidor"""
 
-    # Configurar variables de entorno
-    os.environ['DATABASE_URL'] = 'sqlite:///blacklist.db'
-    os.environ['APP_ALLOWED_BEARER'] = 'dev-bearer-token'
-    os.environ['FLASK_ENV'] = 'development'
-
-    # Crear aplicación
+    # Crear aplicación (usa valores por defecto del config.py)
     app = create_app()
 
     print("🚀 Blacklist Microservice - Servidor de Desarrollo")

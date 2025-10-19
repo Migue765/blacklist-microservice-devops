@@ -89,20 +89,12 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Variables de Entorno
-```bash
-export DATABASE_URL="sqlite:///blacklist.db"
-export JWT_SECRET="dev-secret-key"
-export APP_ALLOWED_BEARER="dev-bearer-token"
-export FLASK_ENV="development"
-```
-
-### 4. Ejecutar
+### 3. Ejecutar
 ```bash
 python run_server.py
 ```
 
-### 5. Probar
+### 4. Probar
 ```bash
 python test_api.py
 ```
