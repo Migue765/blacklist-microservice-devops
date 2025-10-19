@@ -296,5 +296,3 @@ Debe mostrar:
 * [AWS Whitepaper – Deployment Strategies](https://docs.aws.amazon.com/whitepapers/latest/introduction-devops-aws/aeb-deployment-strategies.html)
 
 
-¿Quieres que te genere una versión editable (en `.md` lista para GitHub`) con secciones vacías para que tu equipo solo complete nombres, capturas y URLs?
-```
