@@ -142,7 +142,7 @@ curl -X GET http://localhost:5001/blacklists/test@example.com \
 8. Invalid Email Format
 
 ### Uso Rápido:
-1. Importa el archivo local `postman_collection.json`
+1. Importa el archivo local `postman_collection.json` o a traves de [Postman](https://app.getpostman.com/join-team?invite_code=741d3059f192ebdf7aa5756f276743db1c2aa0c0475f5634a30de66dd3525e86&target_code=5e2e990ea07442725fa97d4f20a61a62).
 2. Configura las variables de entorno:
    - `base_url`: `http://localhost:5001`
    - `token`: `dev-bearer-token`
