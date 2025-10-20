@@ -21,7 +21,7 @@ Implementar microservicio REST que permita:
 ## Entregable 1
 [VIDEO ENTREGA 1](https://photos.app.goo.gl/FhiarQ4Qq1mkV1eo6)
 
-[DOCUMENTO ENTREGA 1](https://github.com/user-attachments/files/23013214/Entrega1_DevOps_Uniandes.Ultimo.pdf)
+[DOCUMENTO ENTREGA 1](https://github.com/user-attachments/files/23013431/Entrega1_DevOps_Uniandes.Ultimo.1.pdf)
 
 [URL health](http://blacklist-v2-env.eba-9bsigk76.us-west-2.elasticbeanstalk.com/health)
 
