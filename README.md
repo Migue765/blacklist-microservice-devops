@@ -31,7 +31,7 @@ blacklist-microservice-devops/
 │   ├── wsgi.py                  # Entry point EB
 │   └── routes/
 │       ├── blacklists.py        # POST endpoint
-│       ├── blacklists_get.py    # GET endpoint (pendiente)
+│       ├── blacklists_get.py    # GET endpoint
 │       └── health.py            # Health check
 ├── requirements.txt             # Dependencias
 ├── run_server.py                # Script desarrollo
@@ -116,19 +116,25 @@ curl -X POST http://localhost:5001/blacklists \
 
 ### Consultar Email
 ```bash
-# TODO: Pendiente...
-# curl -X GET http://localhost:5001/blacklists/test@example.com \
-#   -H "Authorization: Bearer dev-bearer-token"
+curl -X GET http://localhost:5001/blacklists/test@example.com \
+  -H "Authorization: Bearer dev-bearer-token"
+```
+
+**Respuesta esperada:**
+```json
+{
+  "email": "test@example.com",
+  "is_blacklisted": true,
+  "blocked_reason": "correo de prueba"
+}
 ```
 
 ## 🚧 Estado de Desarrollo
 
 ### ✅ Implementado
-- **POST /blacklists** - Agregar email (Juan)
+- **POST /blacklists** - Agregar email a lista negra
+- **GET /blacklists/<email>** - Consultar email en lista negra
 - **GET /ping** - Health check
-
-### ⏳ Pendiente
-- **GET /blacklists/<email>**
 
 ## ☁️ Despliegue AWS
 
