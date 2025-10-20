@@ -129,6 +129,25 @@ curl -X GET http://localhost:5001/blacklists/test@example.com \
 }
 ```
 
+## 📋 Colección Postman
+
+### Endpoints Incluidos:
+1. Health Check
+2. Add Email to Blacklist
+3. Check Blacklisted Email
+4. Check Non-Blacklisted Email
+5. Duplicate Email (409 Conflict)
+6. Unauthorized POST Request
+7. Unauthorized GET Request
+8. Invalid Email Format
+
+### Uso Rápido:
+1. Importa el archivo local `postman_collection.json`
+2. Configura las variables de entorno:
+   - `base_url`: `http://localhost:5001`
+   - `token`: `dev-bearer-token`
+3. Ejecuta las pruebas individuales o toda la colección
+
 ## 🚧 Estado de Desarrollo
 
 ### ✅ Implementado
