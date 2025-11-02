@@ -12,7 +12,7 @@ Implementar microservicio REST que permita:
 
 ## ⚙️ Stack Tecnológico
 
-- **Backend:** Python 3.11+, Flask 1.1.x
+- **Backend:** Python 3.12+, Flask 1.1.x
 - **Base de Datos:** PostgreSQL (AWS RDS)
 - **Cloud:** AWS Elastic Beanstalk
 - **Herramientas:** Flask-SQLAlchemy, Flask-RESTful, Flask-Marshmallow, JWT
