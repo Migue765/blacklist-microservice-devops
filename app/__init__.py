@@ -22,10 +22,12 @@ def create_app():
     from app.routes.blacklists import blacklists_bp
     from app.routes.blacklists_get import blacklists_get_bp
     from app.routes.health import health_bp
+    from app.routes.ping import ping_bp
 
     app.register_blueprint(blacklists_bp, url_prefix='/blacklists')
     app.register_blueprint(blacklists_get_bp, url_prefix='/blacklists')
     app.register_blueprint(health_bp)
+    app.register_blueprint(ping_bp)
 
     # Create tables
     with app.app_context():
