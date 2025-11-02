@@ -3,7 +3,16 @@ version: 0.2
 phases:
   pre_build:
     commands:
+      - echo "Installing dependencies..."
       - pip install -r requirements.txt
+      - pip install pytest pytest-cov
+
+  build:
+    commands:
+      - echo "Running unit tests..."
+      - pytest test_blacklist_get.py -v --tb=short --cov=app --cov-report=term-missing
+      - echo "Tests completed successfully!"
+
 artifacts:
   files:
     - "**/*"
