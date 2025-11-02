@@ -1,9 +1,46 @@
 version: 0.2
 
+env:
+  variables:
+    # Estas variables debes configurarlas en CodeBuild o usarlas desde SSM Parameter Store
+    AWS_DEFAULT_REGION: "us-west-2"
+    AWS_ACCOUNT_ID: "153641554973"
+    IMAGE_REPO_NAME: "blacklist-api"
+    IMAGE_TAG: "latest"
+
 phases:
   pre_build:
     commands:
-      - pip install -r requirements.txt
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      # Obtener credenciales para Docker login a ECR
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      # Crear repositorio ECR si no existe (esto fallará si ya existe, pero no es problema)
+      - aws ecr describe-repositories --repository-names $IMAGE_REPO_NAME --region $AWS_DEFAULT_REGION || aws ecr create-repository --repository-name $IMAGE_REPO_NAME --region $AWS_DEFAULT_REGION
+      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+      - echo Building Docker image...
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t blacklist-api .
+      - docker tag blacklist-api:latest $REPOSITORY_URI:latest
+      - docker tag blacklist-api:latest $REPOSITORY_URI:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Writing image definitions file...
+      # Crear archivo de definición para Elastic Beanstalk
+      - printf '{"AWSEBDockerrunVersion":"1","Image":{"Name":"%s"},"Ports":[{"ContainerPort":8000}]}' $REPOSITORY_URI:$IMAGE_TAG > Dockerrun.aws.json
+
 artifacts:
   files:
-    - "**/*"
+    - Dockerrun.aws.json
+  name: blacklist-microservice-$(date +%Y%m%d-%H%M%S)

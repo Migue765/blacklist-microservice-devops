@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # Base de datos PostgreSQL local
+  postgres:
+    image: postgres:15-alpine
+    container_name: blacklist-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: blacklist_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - blacklist-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Aplicación Flask
+  blacklist-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: blacklist-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # Variables de entorno para desarrollo local
+      FLASK_ENV: development
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres123@postgres:5432/blacklist_db
+      JWT_SECRET: dev-jwt-secret-key-change-in-production
+      APP_ALLOWED_BEARER: dev-bearer-token
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - blacklist-network
+    volumes:
+      # Montar código para hot-reload en desarrollo (opcional)
+      - ./app:/app/app
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--reload", "--timeout", "60", "application:application"]
+
+networks:
+  blacklist-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+

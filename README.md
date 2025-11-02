@@ -15,6 +15,8 @@ Implementar microservicio REST que permita:
 - **Backend:** Python 3.12+, Flask 1.1.x
 - **Base de Datos:** PostgreSQL (AWS RDS)
 - **Cloud:** AWS Elastic Beanstalk
+- **Containerización:** Docker, Amazon ECR
+- **CI/CD:** AWS CodeBuild → Docker → Elastic Beanstalk
 - **Herramientas:** Flask-SQLAlchemy, Flask-RESTful, Flask-Marshmallow, JWT
 
 
@@ -88,23 +90,66 @@ Consulta si email está en lista negra.
 
 ## 🚀 Configuración Local
 
-### 1. Entorno Virtual
+### Opción 1: Con Docker (Recomendado) 🐳
+
+**Inicio rápido:**
+```bash
+# Levantar toda la aplicación (app + PostgreSQL)
+docker-compose up --build
+
+# En segundo plano
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f blacklist-app
+
+# Detener
+docker-compose down
+```
+
+**Probar la aplicación:**
+```bash
+# Health check
+curl http://localhost:8000/ping
+
+# Usar Postman o test_api.py
+python test_api.py
+```
+
+**Script de ayuda:**
+```bash
+# Ver comandos disponibles
+./docker-deploy.sh help
+
+# Build local
+./docker-deploy.sh build
+
+# Levantar con compose
+./docker-deploy.sh compose-up
+
+# Push a ECR
+./docker-deploy.sh push
+```
+
+### Opción 2: Sin Docker (Tradicional)
+
+#### 1. Entorno Virtual
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 2. Dependencias
+#### 2. Dependencias
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Ejecutar
+#### 3. Ejecutar
 ```bash
 python run_server.py
 ```
 
-### 4. Probar
+#### 4. Probar
 ```bash
 python test_api.py
 ```
@@ -167,13 +212,51 @@ curl -X GET http://localhost:5001/blacklists/test@example.com \
 
 ## ☁️ Despliegue AWS
 
+### 🐳 Arquitectura con Docker
+
+```
+┌──────────┐      ┌───────────┐      ┌──────────┐      ┌──────────────┐
+│  GitHub  │─────▶│ CodeBuild │─────▶│   ECR    │─────▶│   Elastic    │
+│   Push   │      │  (Build)  │      │ (Images) │      │  Beanstalk   │
+└──────────┘      └───────────┘      └──────────┘      └──────────────┘
+```
+
 ### Variables de Entorno EB
 - `DATABASE_URL`: `postgresql+psycopg2://user:pass@host:port/db`
 - `JWT_SECRET`: Token secreto JWT
 - `APP_ALLOWED_BEARER`: Token autenticación
 - `FLASK_ENV`: `production`
 
-### Despliegue
+### Configuración Docker en AWS
+
+**📖 Ver guía completa:** [DOCKER_SETUP.md](DOCKER_SETUP.md)
+
+**Pasos resumidos:**
+
+1. **Crear repositorio ECR:**
+```bash
+aws ecr create-repository --repository-name blacklist-microservice --region us-west-2
+```
+
+2. **Configurar CodeBuild:**
+   - Habilitar **Privileged mode** (para Docker)
+   - Agregar permisos IAM para ECR
+   - Variables: `AWS_ACCOUNT_ID`, `AWS_DEFAULT_REGION`
+
+3. **Actualizar Elastic Beanstalk:**
+   - Plataforma: **Docker running on 64bit Amazon Linux 2023**
+   - Agregar permisos IAM de ECR al Instance Profile
+   - Configurar variables de entorno
+
+4. **Deploy automático:**
+```bash
+git add .
+git commit -m "Dockerized application"
+git push origin main
+# CodeBuild detecta el push, construye imagen Docker, sube a ECR y despliega a EB
+```
+
+### Despliegue Manual (Tradicional - Sin Docker)
 ```bash
 zip -r blacklist-microservice.zip . -x "venv/*" "*.pyc" "__pycache__/*" ".git/*"
 ```
