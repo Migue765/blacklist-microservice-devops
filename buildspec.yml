@@ -38,8 +38,11 @@ phases:
       - echo "Docker image pushed successfully!"
       - echo "Image URI:" $REPOSITORY_URI:$IMAGE_TAG
       - echo "Commit tag:" $REPOSITORY_URI:$IMAGE_TAG_COMMIT
-      - printf '[{"name":"blacklist-api","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - echo "Generating Dockerrun.aws.json for Elastic Beanstalk..."
+      - printf '{"AWSEBDockerrunVersion":"1","Image":{"Name":"%s","Update":"true"},"Ports":[{"ContainerPort":8000,"HostPort":8000}],"Logging":"/var/log/nginx"}' $REPOSITORY_URI:$IMAGE_TAG > Dockerrun.aws.json
+      - cat Dockerrun.aws.json
 
 artifacts:
   files:
-    - imagedefinitions.json
+    - Dockerrun.aws.json
+    - .ebextensions/**/*
