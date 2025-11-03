@@ -10,6 +10,8 @@ env:
 phases:
   pre_build:
     commands:
+      - echo "Installing application dependencies..."
+      - pip install -r requirements.txt
       - echo "Installing test dependencies..."
       - pip install pytest pytest-cov
       - echo "Running unit tests..."
