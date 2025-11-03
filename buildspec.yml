@@ -16,7 +16,7 @@ phases:
       - pip install pytest pytest-cov
       - echo "Running unit tests..."
       - pytest test_blacklist_get.py -v --tb=short --cov=app --cov-report=term-missing
-      - echo "✅ Tests passed! Proceeding with Docker build..."
+      - echo "Tests passed! Proceeding with Docker build..."
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME
