@@ -1,18 +1,43 @@
 version: 0.2
 
+env:
+  variables:
+    AWS_ACCOUNT_ID: "153641554973"
+    AWS_DEFAULT_REGION: "us-west-2"
+    ECR_REPOSITORY_NAME: "blacklist-api"
+    IMAGE_TAG: "latest"
+
 phases:
   pre_build:
     commands:
-      - echo "Installing dependencies..."
-      - pip install -r requirements.txt
+      - echo "Installing test dependencies..."
       - pip install pytest pytest-cov
+      - echo "Running unit tests..."
+      - pytest test_blacklist_get.py -v --tb=short --cov=app --cov-report=term-missing
+      - echo "✅ Tests passed! Proceeding with Docker build..."
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG_COMMIT=${COMMIT_HASH:=latest}
 
   build:
     commands:
-      - echo "Running unit tests..."
-      - pytest test_blacklist_get.py -v --tb=short --cov=app --cov-report=term-missing
-      - echo "Tests completed successfully!"
+      - echo "Building Docker image..."
+      - docker build -t $ECR_REPOSITORY_NAME:$IMAGE_TAG .
+      - docker tag $ECR_REPOSITORY_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag $ECR_REPOSITORY_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG_COMMIT
+
+  post_build:
+    commands:
+      - echo "Pushing Docker image to ECR..."
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_URI:$IMAGE_TAG_COMMIT
+      - echo "✅ Docker image pushed successfully!"
+      - echo "Image URI:" $REPOSITORY_URI:$IMAGE_TAG
+      - echo "Commit tag:" $REPOSITORY_URI:$IMAGE_TAG_COMMIT
+      - printf '[{"name":"blacklist-api","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
-    - "**/*"
+    - imagedefinitions.json
