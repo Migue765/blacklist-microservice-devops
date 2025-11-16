@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+buildspec.yml
+
+# Documentation
+*.md
+README*
+docs/
+
+# Environment files
+.env
+.env.local
+env.example
+
+# Test files
+test_*.py
+*_test.py
+tests/
+
+# Deployment
+blacklist-microservice-deployment.zip
+Procfile
+runtime.txt
+analyze_deployments.py
+
+# Postman
+postman_collection.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+.dockerignore
+
