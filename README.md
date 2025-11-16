@@ -12,10 +12,20 @@ Implementar microservicio REST que permita:
 
 ## ⚙️ Stack Tecnológico
 
-- **Backend:** Python 3.8+, Flask 1.1.x
+- **Backend:** Python 3.12+, Flask 1.1.x
 - **Base de Datos:** PostgreSQL (AWS RDS)
 - **Cloud:** AWS Elastic Beanstalk
 - **Herramientas:** Flask-SQLAlchemy, Flask-RESTful, Flask-Marshmallow, JWT
+
+
+## Entregable 1
+[VIDEO ENTREGA 1](https://photos.app.goo.gl/FhiarQ4Qq1mkV1eo6)
+
+[DOCUMENTO ENTREGA 1](https://github.com/user-attachments/files/23013431/Entrega1_DevOps_Uniandes.Ultimo.1.pdf)
+
+[URL health](http://blacklist-v2-env.eba-9bsigk76.us-west-2.elasticbeanstalk.com/health)
+
+url base: http://blacklist-v2-env.eba-9bsigk76.us-west-2.elasticbeanstalk.com
 
 ## 🏗️ Estructura del Proyecto
 
@@ -31,7 +41,7 @@ blacklist-microservice-devops/
 │   ├── wsgi.py                  # Entry point EB
 │   └── routes/
 │       ├── blacklists.py        # POST endpoint
-│       ├── blacklists_get.py    # GET endpoint (pendiente)
+│       ├── blacklists_get.py    # GET endpoint
 │       └── health.py            # Health check
 ├── requirements.txt             # Dependencias
 ├── run_server.py                # Script desarrollo
@@ -116,19 +126,44 @@ curl -X POST http://localhost:5001/blacklists \
 
 ### Consultar Email
 ```bash
-# TODO: Pendiente...
-# curl -X GET http://localhost:5001/blacklists/test@example.com \
-#   -H "Authorization: Bearer dev-bearer-token"
+curl -X GET http://localhost:5001/blacklists/test@example.com \
+  -H "Authorization: Bearer dev-bearer-token"
 ```
+
+**Respuesta esperada:**
+```json
+{
+  "email": "test@example.com",
+  "is_blacklisted": true,
+  "blocked_reason": "correo de prueba"
+}
+```
+
+## 📋 Colección Postman
+
+### Endpoints Incluidos:
+1. Health Check
+2. Add Email to Blacklist
+3. Check Blacklisted Email
+4. Check Non-Blacklisted Email
+5. Duplicate Email (409 Conflict)
+6. Unauthorized POST Request
+7. Unauthorized GET Request
+8. Invalid Email Format
+
+### Uso Rápido:
+1. Importa el archivo local `postman_collection.json` o a traves de [Postman](https://app.getpostman.com/join-team?invite_code=741d3059f192ebdf7aa5756f276743db1c2aa0c0475f5634a30de66dd3525e86&target_code=5e2e990ea07442725fa97d4f20a61a62).
+2. Configura las variables de entorno:
+   - `base_url`: `http://localhost:5001`
+   - `token`: `dev-bearer-token`
+3. Ejecuta las pruebas individuales o toda la colección
 
 ## 🚧 Estado de Desarrollo
 
 ### ✅ Implementado
-- **POST /blacklists** - Agregar email (Juan)
+- **POST /blacklists** - Agregar email a lista negra
+- **GET /blacklists/<email>** - Consultar email en lista negra
 - **GET /ping** - Health check
-
-### ⏳ Pendiente
-- **GET /blacklists/<email>**
 
 ## ☁️ Despliegue AWS
 
