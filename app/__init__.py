@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager
@@ -28,6 +28,12 @@ def create_app():
     app.register_blueprint(blacklists_get_bp, url_prefix='/blacklists')
     app.register_blueprint(health_bp)
     app.register_blueprint(ping_bp)
+
+    # Root endpoint for health checks
+    @app.route('/', methods=['GET'])
+    def root():
+        """Root endpoint for load balancer health checks"""
+        return jsonify({"status": "ok"}), 200
 
     # Create tables
     with app.app_context():

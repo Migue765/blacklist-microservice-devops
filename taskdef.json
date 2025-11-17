@@ -1,0 +1,62 @@
+{
+    "family": "tarea-entrega-3",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "3072",
+    "executionRoleArn": "arn:aws:iam::153641554973:role/ecsTaskExecutionRole",
+    "containerDefinitions": [
+        {
+            "name": "blacklist-app",
+            "image": "<IMAGE1_NAME>",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "containerPort": 5000,
+                    "hostPort": 5000,
+                    "protocol": "tcp",
+                    "name": "blacklist-app-5000-tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "DATABASE_URL",
+                    "value": "postgresql+psycopg2://postgres:dbblacklist@database-1.chcoiy4c69rm.us-west-2.rds.amazonaws.com:5432/dbblacklist?sslmode=require"
+                },
+                {
+                    "name": "APP_ALLOWED_BEARER",
+                    "value": "dev-bearer-token"
+                },
+                {
+                    "name": "PORT",
+                    "value": "5000"
+                },
+                {
+                    "name": "JWT_SECRET",
+                    "value": "dev-secret-key-change-in-production"
+                },
+                {
+                    "name": "FLASK_ENV",
+                    "value": "production"
+                },
+                {
+                    "name": "LOG_LEVEL",
+                    "value": "INFO"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/tarea-entrega-3",
+                    "awslogs-create-group": "true",
+                    "awslogs-region": "us-west-2",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        }
+    ]
+}
