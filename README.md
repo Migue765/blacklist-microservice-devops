@@ -22,10 +22,12 @@ Implementar microservicio REST que permita:
 [VIDEO ENTREGA 1](https://photos.app.goo.gl/FhiarQ4Qq1mkV1eo6)
 
 [DOCUMENTO ENTREGA 1](https://github.com/user-attachments/files/23013431/Entrega1_DevOps_Uniandes.Ultimo.1.pdf)
+[DOCUMENTO ENTREGA 2]()
+[DOCUMENTO ENTREGA 3]()
 
-[URL health](http://blacklist-v2-env.eba-9bsigk76.us-west-2.elasticbeanstalk.com/health)
+[URL health](http://lb-blacklist-app-1551404585.us-west-2.elb.amazonaws.com/health)
 
-url base: http://blacklist-v2-env.eba-9bsigk76.us-west-2.elasticbeanstalk.com
+url base: http://lb-blacklist-app-1551404585.us-west-2.elb.amazonaws.com
 
 ## 🏗️ Estructura del Proyecto
 
