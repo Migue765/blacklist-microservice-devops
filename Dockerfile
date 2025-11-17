@@ -51,12 +51,13 @@ COPY --chown=appuser:appuser . .
 # Cambiar al usuario no-root
 USER appuser
 
-# Exponer puerto
-EXPOSE 8000
+# Exponer puerto (usa variable PORT o 5000 por defecto)
+EXPOSE 5000
 
 # Health check - removido temporalmente para simplificar debugging
 # EB tiene su propio health check configurado
 
 # Comando para ejecutar la aplicación
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "60", "--access-logfile", "-", "--error-logfile", "-", "application:application"]
+# Usa la variable de entorno PORT si está definida, sino usa 5000 por defecto
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 3 --timeout 60 --access-logfile - --error-logfile - application:application"]
 
