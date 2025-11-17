@@ -13,4 +13,4 @@ def health_check():
         JSON response with status 'ok'
     """
     logger.info("Health check requested")
-    return jsonify({"status": "ok :)"}), 200
+    return jsonify({"status": "ok"}), 200
