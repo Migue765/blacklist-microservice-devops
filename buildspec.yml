@@ -41,14 +41,12 @@ phases:
       - echo "Writing Image Definitions file..."
       - printf '[{"name":"blacklist-app","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - printf '{"ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG > imageDetail.json
-      - echo "Updating taskdef.json with new image URI..."
-      - sed -i "s|<IMAGE1_NAME>|$REPOSITORY_URI:$IMAGE_TAG|g" taskdef.json
       - echo "Verifying files exist..."
       - ls -la appspec.json taskdef.json imagedefinitions.json imageDetail.json
-      - cat imagedefinitions.json
-      - cat imageDetail.json
-      - echo "Task definition updated:"
+      - echo "Task definition placeholder (will be replaced by CodePipeline):"
       - cat taskdef.json | jq '.containerDefinitions[0].image'
+      - echo "Image detail for CodePipeline:"
+      - cat imageDetail.json
 
 artifacts:
   files:
