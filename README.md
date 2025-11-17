@@ -207,3 +207,5 @@ Documentar 4 estrategias en Beanstalk (3-6 instancias):
 - [AWS Elastic Beanstalk Documentation](https://docs.aws.amazon.com/elasticbeanstalk/)
 - [Flask Official Documentation](https://flask.palletsprojects.com/)
 - [AWS Deployment Strategies](https://docs.aws.amazon.com/whitepapers/latest/introduction-devops-aws/aeb-deployment-strategies.html)
+
+LB: http://lb-blacklist-app-1551404585.us-west-2.elb.amazonaws.com/health
