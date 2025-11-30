@@ -1,5 +1,5 @@
 # Multi-stage build para optimizar el tamaño de la imagen
-FROM python:3.11-slim as builder
+FROM public.ecr.aws/docker/library/python:3.11-slim AS builder
 
 # Variables de entorno para optimizar Python en contenedores
 ENV PYTHONUNBUFFERED=1 \
@@ -24,7 +24,7 @@ COPY requirements.txt .
 RUN pip install --user -r requirements.txt
 
 # Etapa final
-FROM python:3.11-slim
+FROM public.ecr.aws/docker/library/python:3.11-slim
 
 # Variables de entorno
 ENV PYTHONUNBUFFERED=1 \
