@@ -25,3 +25,7 @@ class Config:
 
     # Logging configuration
     LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
+
+    # New Relic configuration
+    NEW_RELIC_LICENSE_KEY = os.environ.get('NEW_RELIC_LICENSE_KEY', '')
+    NEW_RELIC_APP_NAME = os.environ.get('NEW_RELIC_APP_NAME', 'Blacklist Microservice')

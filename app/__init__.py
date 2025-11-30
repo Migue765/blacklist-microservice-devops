@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager
 from app.config import Config
+import os
 
 db = SQLAlchemy()
 ma = Marshmallow()
@@ -38,5 +39,13 @@ def create_app():
     # Create tables
     with app.app_context():
         db.create_all()
+
+    # Wrap app with New Relic WSGI middleware if enabled
+    if os.environ.get('NEW_RELIC_LICENSE_KEY'):
+        try:
+            import newrelic.agent
+            app = newrelic.agent.WSGIApplicationWrapper(app)
+        except ImportError:
+            pass  # New Relic not installed, continue without it
 
     return app

@@ -6,6 +6,7 @@ from app.auth import require_bearer_token
 from app.utils import get_client_ip, setup_logging
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
+import newrelic.agent
 
 blacklists_bp = Blueprint('blacklists', __name__)
 logger = setup_logging()
@@ -17,6 +18,7 @@ error_schema = ErrorSchema()
 
 @blacklists_bp.route('', methods=['POST'])
 @require_bearer_token
+@newrelic.agent.function_trace()
 def add_to_blacklist():
     """
     Add an email to the global blacklist
@@ -38,10 +40,14 @@ def add_to_blacklist():
         409: Email already exists
         500: Server error
     """
+    # Record custom metric for blacklist addition attempt
+    newrelic.agent.record_custom_metric('Custom/Blacklist/AddAttempt', 1)
+    
     try:
         # Validate request data
         data = request.get_json()
         if not data:
+            newrelic.agent.record_custom_metric('Custom/Blacklist/AddValidationError', 1)
             return jsonify({
                 'error': 'Bad Request',
                 'message': 'Request body must be JSON'
@@ -51,6 +57,7 @@ def add_to_blacklist():
         try:
             validated_data = blacklist_schema.load(data)
         except Exception as e:
+            newrelic.agent.record_custom_metric('Custom/Blacklist/AddValidationError', 1)
             return jsonify({
                 'error': 'Bad Request',
                 'message': 'Validation error',
@@ -76,6 +83,11 @@ def add_to_blacklist():
 
             logger.info(f"Email {validated_data['email']} added to blacklist by IP {client_ip}")
 
+            # Record success metric
+            newrelic.agent.record_custom_metric('Custom/Blacklist/AddSuccess', 1)
+            newrelic.agent.add_custom_attribute('email', validated_data['email'])
+            newrelic.agent.add_custom_attribute('app_uuid', validated_data['app_uuid'])
+
             return jsonify({
                 'message': 'Email agregado exitosamente a la lista negra.',
                 'data': blacklist_response_schema.dump(blacklist_entry)
@@ -84,12 +96,18 @@ def add_to_blacklist():
         except IntegrityError as e:
             db.session.rollback()
             if 'unique constraint' in str(e).lower() or 'duplicate key' in str(e).lower():
+                # Record duplicate email metric
+                newrelic.agent.record_custom_metric('Custom/Blacklist/AddDuplicate', 1)
+                newrelic.agent.record_exception()
                 return jsonify({
                     'error': 'Conflict',
                     'message': 'Email already exists in blacklist'
                 }), 409
             else:
                 logger.error(f"Database integrity error: {str(e)}")
+                # Record database error
+                newrelic.agent.record_custom_metric('Custom/Blacklist/AddDatabaseError', 1)
+                newrelic.agent.record_exception()
                 return jsonify({
                     'error': 'Internal Server Error',
                     'message': 'Database error occurred'
@@ -97,6 +115,9 @@ def add_to_blacklist():
 
     except Exception as e:
         logger.error(f"Unexpected error in add_to_blacklist: {str(e)}")
+        # Record error metric
+        newrelic.agent.record_custom_metric('Custom/Blacklist/AddError', 1)
+        newrelic.agent.record_exception()
         return jsonify({
             'error': 'Internal Server Error',
             'message': 'An unexpected error occurred'
