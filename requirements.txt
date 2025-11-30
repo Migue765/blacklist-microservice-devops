@@ -8,6 +8,7 @@ marshmallow-sqlalchemy==0.26.1
 psycopg2-binary==2.9.3
 gunicorn==20.1.0
 python-dotenv==0.19.2
+newrelic
 Werkzeug==1.0.1
 MarkupSafe==2.0.1
 SQLAlchemy==1.4.46
