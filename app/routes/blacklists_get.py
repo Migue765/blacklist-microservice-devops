@@ -3,7 +3,9 @@ from app import db
 from app.models import Blacklist
 from app.auth import require_bearer_token
 from app.utils import setup_logging
+from app.db_metrics import record_db_metric
 import newrelic.agent
+import time
 
 blacklists_get_bp = Blueprint('blacklists_get', __name__)
 logger = setup_logging()
@@ -48,13 +50,19 @@ def check_blacklist(email):
                 'message': 'Invalid email format'
             }), 400
         
-        # Query database for email
+        # Query database for email with timing
+        start_time = time.time()
         blacklist_entry = Blacklist.query.filter_by(email=email.lower()).first()
+        elapsed_time = (time.time() - start_time) * 1000  # Convert to milliseconds
+        
+        # Record database response time metric
+        record_db_metric("query", elapsed_time, success=True)
         
         if blacklist_entry:
             logger.info("Email found in blacklist", 
                        email=email, 
-                       is_blacklisted=True)
+                       is_blacklisted=True,
+                       db_time_ms=elapsed_time)
             # Record found metric
             newrelic.agent.record_custom_metric('Custom/Blacklist/QueryFound', 1)
             newrelic.agent.add_custom_attribute('email', email.lower())
@@ -67,7 +75,8 @@ def check_blacklist(email):
         else:
             logger.info("Email not found in blacklist", 
                        email=email, 
-                       is_blacklisted=False)
+                       is_blacklisted=False,
+                       db_time_ms=elapsed_time)
             # Record not found metric
             newrelic.agent.record_custom_metric('Custom/Blacklist/QueryNotFound', 1)
             newrelic.agent.add_custom_attribute('email', email.lower())
@@ -79,6 +88,10 @@ def check_blacklist(email):
             }), 200
             
     except Exception as e:
+        # Record database error metric if it's a DB error
+        if 'database' in str(e).lower() or 'sql' in str(e).lower():
+            record_db_metric("query", 0, success=False)
+        
         logger.error("Error checking blacklist", 
                     email=email, 
                     error=str(e), 

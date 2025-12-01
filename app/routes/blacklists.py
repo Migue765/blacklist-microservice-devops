@@ -4,9 +4,11 @@ from app.models import Blacklist
 from app.schemas import BlacklistSchema, BlacklistResponseSchema, ErrorSchema
 from app.auth import require_bearer_token
 from app.utils import get_client_ip, setup_logging
+from app.db_metrics import db_operation_timer, record_db_metric
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 import newrelic.agent
+import time
 
 blacklists_bp = Blueprint('blacklists', __name__)
 logger = setup_logging()
@@ -76,15 +78,21 @@ def add_to_blacklist():
             created_at=datetime.utcnow()
         )
 
-        # Save to database
+        # Save to database with timing
         try:
+            start_time = time.time()
             db.session.add(blacklist_entry)
             db.session.commit()
+            elapsed_time = (time.time() - start_time) * 1000  # Convert to milliseconds
+            
+            # Record database response time metric
+            record_db_metric("insert", elapsed_time, success=True)
 
             logger.info("Email added to blacklist", 
                        email=validated_data['email'], 
                        client_ip=client_ip,
-                       app_uuid=validated_data['app_uuid'])
+                       app_uuid=validated_data['app_uuid'],
+                       db_time_ms=elapsed_time)
 
             # Record success metric
             newrelic.agent.record_custom_metric('Custom/Blacklist/AddSuccess', 1)
@@ -98,6 +106,9 @@ def add_to_blacklist():
 
         except IntegrityError as e:
             db.session.rollback()
+            # Record database error metric
+            record_db_metric("insert", 0, success=False)
+            
             if 'unique constraint' in str(e).lower() or 'duplicate key' in str(e).lower():
                 # Record duplicate email metric
                 newrelic.agent.record_custom_metric('Custom/Blacklist/AddDuplicate', 1)
