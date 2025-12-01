@@ -5,7 +5,7 @@ import os
 
 # Initialize New Relic before importing the app
 # Only initialize if not already initialized (e.g., when using newrelic-admin run-program)
-if os.environ.get('NEW_RELIC_LICENSE_KEY', '01591B20C0FFADDA87E9C64F9CDD2B757B123ACD84F77EE29BAF5D3FA06B256A'):
+if os.environ.get('NEW_RELIC_LICENSE_KEY', '022ab198ef6059b8346e0d3aa7e6e9a3FFFFNRAL'):
     try:
         import newrelic.agent
         from newrelic.api.exceptions import ConfigurationError

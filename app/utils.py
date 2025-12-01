@@ -42,10 +42,21 @@ class JSONFormatter(logging.Formatter):
         if hasattr(record, 'extra_fields'):
             log_data.update(record.extra_fields)
         
-        # Add Heroku dyno info if available
+        # Add environment info
         if os.environ.get('DYNO'):
             log_data['dyno'] = os.environ.get('DYNO')
             log_data['source'] = 'heroku'
+        elif os.environ.get('ECS_CONTAINER_METADATA_URI'):
+            log_data['source'] = 'aws-ecs'
+            # Try to get task ARN from metadata
+            try:
+                import requests
+                metadata_uri = os.environ.get('ECS_CONTAINER_METADATA_URI')
+                if metadata_uri:
+                    task_metadata = requests.get(f"{metadata_uri}/task", timeout=2).json()
+                    log_data['task_arn'] = task_metadata.get('TaskARN', 'unknown')
+            except:
+                pass
         
         # Add New Relic context if available
         try:
@@ -73,8 +84,17 @@ class StructuredLogger:
         handler.setLevel(logging.INFO)
         
         # Use JSON formatter for New Relic compatibility, or simple formatter for local dev
-        if os.environ.get('HEROKU_APP_NAME') or os.environ.get('DYNO'):
-            # Use JSON format for Heroku/New Relic
+        # Detect Heroku (DYNO) or AWS ECS (ECS_CONTAINER_METADATA_URI) or explicit flag
+        is_production = (
+            os.environ.get('HEROKU_APP_NAME') or 
+            os.environ.get('DYNO') or 
+            os.environ.get('ECS_CONTAINER_METADATA_URI') or  # AWS ECS
+            os.environ.get('AWS_ENVIRONMENT') or  # Explicit flag
+            os.environ.get('NEW_RELIC_LICENSE_KEY')  # If New Relic is configured, use JSON
+        )
+        
+        if is_production:
+            # Use JSON format for production environments (Heroku/AWS) and New Relic
             handler.setFormatter(JSONFormatter())
         else:
             # Use simple format for local development
