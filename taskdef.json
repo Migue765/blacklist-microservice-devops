@@ -52,6 +52,10 @@
                     "value": "01591B20C0FFADDA87E9C64F9CDD2B757B123ACD84F77EE29BAF5D3FA06B256A"
                 },
                 {
+                    "name": "NEW_RELIC_API_KEY",
+                    "value": "A3465C7DC1CE06540CC4C37DAD454DC3DE81C6E97F7F196BB1429FE5C3542036"
+                },
+                {
                     "name": "NEW_RELIC_APP_NAME",
                     "value": "blacklist-microservice"
                 }
