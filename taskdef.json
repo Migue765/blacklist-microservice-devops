@@ -46,8 +46,26 @@
                 {
                     "name": "LOG_LEVEL",
                     "value": "INFO"
+                },
+                {
+                    "name": "NEW_RELIC_LICENSE_KEY",
+                    "value": "01591B20C0FFADDA87E9C64F9CDD2B757B123ACD84F77EE29BAF5D3FA06B256A"
+                },
+                {
+                    "name": "NEW_RELIC_APP_NAME",
+                    "value": "blacklist-microservice"
                 }
             ],
+            "healthCheck": {
+                "command": [
+                    "CMD-SHELL",
+                    "curl -f http://localhost:5000/health || exit 1"
+                ],
+                "interval": 30,
+                "timeout": 5,
+                "retries": 3,
+                "startPeriod": 60
+            },
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
