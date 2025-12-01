@@ -19,6 +19,7 @@ if os.environ.get('NEW_RELIC_LICENSE_KEY', '01591B20C0FFADDA87E9C64F9CDD2B757B12
                 newrelic.agent.initialize()
         except ConfigurationError:
             # Already initialized (e.g., by newrelic-admin run-program), skip
+            print("New Relic already initialized")
             pass
     except (ImportError, Exception) as e:
         # If New Relic fails to initialize, continue without it
