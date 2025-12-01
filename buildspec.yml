@@ -47,6 +47,13 @@ phases:
       - cat taskdef.json | jq '.containerDefinitions[0].image'
       - echo "Image detail for CodePipeline:"
       - cat imageDetail.json
+      - |
+        echo "Notifying New Relic about deployment..."
+        if [ -n "$NEW_RELIC_API_KEY" ] && [ -n "$NEW_RELIC_DEPLOYMENT_ENTITY_GUID" ]; then
+          python3 scripts/notify_newrelic_deployment.py || echo "Warning: New Relic notification failed, continuing..."
+        else
+          echo "Skipping New Relic notification (API_KEY or GUID not set)"
+        fi
 
 artifacts:
   files:

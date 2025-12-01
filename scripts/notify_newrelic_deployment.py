@@ -11,12 +11,33 @@ from datetime import datetime
 
 def get_deployment_info():
     """Obtener información del despliegue desde variables de entorno"""
+    # Priorizar variables de CodeBuild/CodePipeline, luego Heroku, luego defaults
+    revision = (
+        os.environ.get('CODEBUILD_RESOLVED_SOURCE_VERSION') or
+        os.environ.get('CODEBUILD_SOURCE_VERSION') or
+        os.environ.get('HEROKU_SLUG_COMMIT') or
+        os.environ.get('SOURCE_VERSION', 'unknown')
+    )
+    
+    # Obtener commit hash corto
+    if len(revision) > 7:
+        revision = revision[:7]
+    
     return {
-        'revision': os.environ.get('HEROKU_SLUG_COMMIT', os.environ.get('SOURCE_VERSION', 'unknown')),
-        'description': os.environ.get('HEROKU_SLUG_DESCRIPTION', 'Deployment'),
-        'user': os.environ.get('HEROKU_USER', os.environ.get('USER', 'unknown')),
-        'app_name': os.environ.get('HEROKU_APP_NAME', os.environ.get('NEW_RELIC_APP_NAME', 'blacklist-api')),
+        'revision': revision,
+        'description': (
+            os.environ.get('CODEBUILD_BUILD_ID') or
+            os.environ.get('HEROKU_SLUG_DESCRIPTION') or
+            f"Deployment from CodePipeline - Build {os.environ.get('CODEBUILD_BUILD_ID', 'unknown')}"
+        ),
+        'user': (
+            os.environ.get('CODEBUILD_INITIATOR') or
+            os.environ.get('HEROKU_USER') or
+            os.environ.get('USER', 'unknown')
+        ),
+        'app_name': os.environ.get('NEW_RELIC_APP_NAME', 'blacklist-microservice'),
         'dyno': os.environ.get('DYNO', 'unknown'),
+        'build_id': os.environ.get('CODEBUILD_BUILD_ID', 'unknown'),
     }
 
 def notify_newrelic_deployment():
