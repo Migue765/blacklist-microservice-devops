@@ -1,0 +1,36 @@
+name: Change Tracking Marker
+
+on:
+    release:
+        types: [published]
+    workflow_dispatch: # Permite ejecutar manualmente
+        inputs:
+            version:
+                description: "Version to deploy"
+                required: true
+                default: "manual"
+
+jobs:
+    newrelic:
+        runs-on: ubuntu-latest
+        name: New Relic Deployment Marker
+        steps:
+            # This step builds a var with the release tag value to use later
+            - name: Set Release Version from Tag
+              if: github.event_name == 'release'
+              run: echo "RELEASE_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+
+            # For manual runs, use the input version
+            - name: Set Release Version from Input
+              if: github.event_name == 'workflow_dispatch'
+              run: echo "RELEASE_VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+
+            # This step creates a new Change Tracking Marker
+            - name: New Relic Application Deployment Marker
+              uses: newrelic/deployment-marker-action@v2.3.0
+              with:
+                  apiKey: ${{ secrets.NEW_RELIC_API_KEY }}
+                  guid: ${{ secrets.NEW_RELIC_DEPLOYMENT_ENTITY_GUID }}
+                  version: "${{ env.RELEASE_VERSION }}"
+                  user: "${{ github.actor }}"
+                  changelog: "Deployment via GitHub Actions - ${{ github.event.head_commit.message || 'Manual deployment' }}"
