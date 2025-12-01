@@ -20,5 +20,5 @@ def health_check():
         # New Relic not available, continue without it
         pass
     
-    logger.info("Health check requested")
+    logger.info("Health check requested", endpoint="/health")
     return jsonify({"status": "ok"}), 200

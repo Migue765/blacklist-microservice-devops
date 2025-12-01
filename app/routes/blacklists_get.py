@@ -52,7 +52,9 @@ def check_blacklist(email):
         blacklist_entry = Blacklist.query.filter_by(email=email.lower()).first()
         
         if blacklist_entry:
-            logger.info(f"Email {email} found in blacklist")
+            logger.info("Email found in blacklist", 
+                       email=email, 
+                       is_blacklisted=True)
             # Record found metric
             newrelic.agent.record_custom_metric('Custom/Blacklist/QueryFound', 1)
             newrelic.agent.add_custom_attribute('email', email.lower())
@@ -63,7 +65,9 @@ def check_blacklist(email):
                 'blocked_reason': blacklist_entry.blocked_reason
             }), 200
         else:
-            logger.info(f"Email {email} not found in blacklist")
+            logger.info("Email not found in blacklist", 
+                       email=email, 
+                       is_blacklisted=False)
             # Record not found metric
             newrelic.agent.record_custom_metric('Custom/Blacklist/QueryNotFound', 1)
             newrelic.agent.add_custom_attribute('email', email.lower())
@@ -75,7 +79,10 @@ def check_blacklist(email):
             }), 200
             
     except Exception as e:
-        logger.error(f"Error checking blacklist for {email}: {str(e)}")
+        logger.error("Error checking blacklist", 
+                    email=email, 
+                    error=str(e), 
+                    error_type=type(e).__name__)
         # Record error metric
         newrelic.agent.record_custom_metric('Custom/Blacklist/QueryError', 1)
         newrelic.agent.record_exception()

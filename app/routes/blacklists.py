@@ -81,7 +81,10 @@ def add_to_blacklist():
             db.session.add(blacklist_entry)
             db.session.commit()
 
-            logger.info(f"Email {validated_data['email']} added to blacklist by IP {client_ip}")
+            logger.info("Email added to blacklist", 
+                       email=validated_data['email'], 
+                       client_ip=client_ip,
+                       app_uuid=validated_data['app_uuid'])
 
             # Record success metric
             newrelic.agent.record_custom_metric('Custom/Blacklist/AddSuccess', 1)
@@ -104,7 +107,9 @@ def add_to_blacklist():
                     'message': 'Email already exists in blacklist'
                 }), 409
             else:
-                logger.error(f"Database integrity error: {str(e)}")
+                logger.error("Database integrity error", 
+                             error=str(e), 
+                             error_type="IntegrityError")
                 # Record database error
                 newrelic.agent.record_custom_metric('Custom/Blacklist/AddDatabaseError', 1)
                 newrelic.agent.record_exception()
@@ -114,7 +119,9 @@ def add_to_blacklist():
                 }), 500
 
     except Exception as e:
-        logger.error(f"Unexpected error in add_to_blacklist: {str(e)}")
+        logger.error("Unexpected error in add_to_blacklist", 
+                    error=str(e), 
+                    error_type=type(e).__name__)
         # Record error metric
         newrelic.agent.record_custom_metric('Custom/Blacklist/AddError', 1)
         newrelic.agent.record_exception()
